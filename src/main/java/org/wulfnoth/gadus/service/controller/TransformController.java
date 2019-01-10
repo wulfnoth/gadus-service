@@ -1,35 +1,70 @@
 package org.wulfnoth.gadus.service.controller;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.wulfnoth.gadus.service.entity.FileInfo;
+import org.wulfnoth.md.MarkdownParser;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-/**
- * Created on 2019/1/10.
- */
-@RestController
+@Controller
 public class TransformController {
 
-	@RequestMapping("/test")
-	public String test(String name) {
-		return "hello" + name;
+	@RequestMapping("/transform")
+	public String transform(Model model, String filepath) {
+		File file = new File("data/" + filepath.replaceAll("_-_", "/"));
+		model.addAttribute("title", "测试title");
+		String content = MarkdownParser.parser(file).getContent();
+//		StringBuilder sb = new StringBuilder();
+//		sb.append("<div th:fragment=\"copy\">\n").append(content).append("\n</div>");
+//		System.out.println(sb.toString());
+//		model.addAttribute("content", sb.toString());
+		model.addAttribute("content", content);
+		return "transform";
 	}
 
 
+	@RequestMapping("/index")
+	public String index() {
+		return "/index";
+	}
 
-	@RequestMapping("/list")
-	public String getLists() {
-		StringBuilder sb = new StringBuilder();
-		File file = new File("data/xgboost/paper_note.md");
-		sb.append("<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<title>list</title>\n\t</head>\n")
-				.append("\t<body>\n").append("<p><a href=\"test?name=")
-				.append(file.getName())
-				.append("\">")
-				.append(file.getName())
-				.append("</a></p>\n")
-				.append("\t</body>\n</html>");
-		return sb.toString();
+	private List<FileInfo> recursiveSearchMDFile(File file, String parentPath, String filename) {
+		if (file.isDirectory()) {
+			File[] subFiles = file.listFiles();
+			if (subFiles!=null) {
+				if (!StringUtils.isEmpty(parentPath)) {
+					parentPath = parentPath + "_-_";
+				}
+				List<FileInfo> fileInfos = new ArrayList<>();
+				for (File subFile : subFiles) {
+					if (subFile.isDirectory()) {
+						fileInfos.addAll(recursiveSearchMDFile(subFile,
+								parentPath + subFile.getName(),
+								filename));
+					} else if (subFile.getName().contains(filename)){
+						fileInfos.add(new FileInfo(parentPath + subFile.getName(), subFile.getName()));
+					}
+				}
+				return fileInfos;
+			}
+		}
+
+		return Collections.emptyList();
+	}
+
+	@RequestMapping("/getfile")
+	public String getLists(Model model, String filename) {
+		System.out.println(filename);
+		File file = new File("data");
+
+		model.addAttribute("infos", recursiveSearchMDFile(file, "", filename));
+		return "/list";
 	}
 
 }
