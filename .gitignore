@@ -1,3 +1,4 @@
 .idea/*
 gadus-service.iml
 target/*
+src/main/resources/application.properties
