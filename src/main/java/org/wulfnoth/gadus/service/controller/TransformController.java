@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.wulfnoth.gadus.service.Main;
 import org.wulfnoth.gadus.service.entity.FileInfo;
 import org.wulfnoth.md.MarkdownParser;
 
@@ -17,7 +18,7 @@ public class TransformController {
 
 	@RequestMapping("/transform")
 	public String transform(Model model, String filepath) {
-		File file = new File("data/" + filepath.replaceAll("_-_", "/"));
+		File file = new File(Main.config.getNoteFilePath() + "/" + filepath.replaceAll("_-_", "/"));
 		model.addAttribute("title", "测试title");
 		String content = MarkdownParser.parser(file).getContent();
 //		StringBuilder sb = new StringBuilder();
@@ -47,7 +48,7 @@ public class TransformController {
 						fileInfos.addAll(recursiveSearchMDFile(subFile,
 								parentPath + subFile.getName(),
 								filename));
-					} else if (subFile.getName().contains(filename)){
+					} else if (subFile.getName().endsWith(".md") && subFile.getName().contains(filename)){
 						fileInfos.add(new FileInfo(parentPath + subFile.getName(), subFile.getName()));
 					}
 				}
@@ -61,7 +62,7 @@ public class TransformController {
 	@RequestMapping("/getfile")
 	public String getLists(Model model, String filename) {
 		System.out.println(filename);
-		File file = new File("data");
+		File file = new File(Main.config.getNoteFilePath() + "/");
 
 		model.addAttribute("infos", recursiveSearchMDFile(file, "", filename));
 		return "/list";

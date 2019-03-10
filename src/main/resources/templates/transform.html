@@ -6,13 +6,18 @@
         <link type="text/css" rel="stylesheet" href="css/sh_nedit.css"/>
         <link type="text/css" rel="stylesheet" href="css/content.css"/>
         <script type="text/javascript" src="js/sh_main.js"></script>
-        <script type="text/javascript" src="js/sh_python.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">
-            MathJax.Hub.Config({
-                tex2jax: {inlineMath: [['$', '$']]},
-                messageStyle: "none"
-             });
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css"/>
+        <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false}
+                    ]
+                });
+            });
         </script>
     </head>
     <body onload="sh_highlightDocument()">
